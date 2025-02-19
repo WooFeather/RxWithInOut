@@ -30,7 +30,7 @@ final class PersonTableViewCell: UITableViewCell {
     
     let detailButton: UIButton = {
         let button = UIButton()
-        button.setTitle("받기", for: .normal)
+        button.setTitle("더보기", for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
         button.isUserInteractionEnabled = true
         button.backgroundColor = .lightGray
