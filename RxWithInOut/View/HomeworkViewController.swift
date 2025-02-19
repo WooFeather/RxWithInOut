@@ -52,6 +52,16 @@ final class HomeworkViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
+        searchBar.rx.searchButtonClicked
+            .withLatestFrom(searchBar.rx.text.orEmpty)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .bind(with: self) { owner, value in
+                print(value)
+                
+                let result = value.isEmpty ? owner.sampleUserData : owner.sampleUserData.filter { $0.name.contains(value) }
+                owner.sampleUsers.onNext(result)
+            }
+            .disposed(by: disposeBag)
     }
 }
  
