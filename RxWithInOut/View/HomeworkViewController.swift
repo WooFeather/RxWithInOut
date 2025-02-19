@@ -34,7 +34,7 @@ final class HomeworkViewController: UIViewController {
      
     private func bind() {
         
-        let input = HomeworkViewModel.Input(tableViewModelSelected: tableView.rx.modelSelected(Person.self))
+        let input = HomeworkViewModel.Input(tableViewModelSelected: tableView.rx.modelSelected(Person.self), searchButtonTapped: searchBar.rx.searchButtonClicked.withLatestFrom(searchBar.rx.text.orEmpty))
         
         let output = viewModel.transform(input: input)
         
@@ -65,13 +65,12 @@ final class HomeworkViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        searchBar.rx.searchButtonClicked
-            .withLatestFrom(searchBar.rx.text.orEmpty)
-            .map { $0.trimmingCharacters(in: .whitespaces) }
+        output.trimmedSearchText
             .bind(with: self) { owner, value in
                 print(value)
                 
                 let result = value.isEmpty ? owner.sampleUserData : owner.sampleUserData.filter { $0.name.contains(value) }
+                
                 owner.sampleUsers.onNext(result)
             }
             .disposed(by: disposeBag)

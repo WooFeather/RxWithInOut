@@ -15,12 +15,15 @@ final class HomeworkViewModel {
         // tableView의 cell을 탭
         let tableViewModelSelected: ControlEvent<Person>
         // searchBar의 search버튼을 탭
+        let searchButtonTapped: Observable<ControlProperty<String>.Element>
         // cell 안의 더보기 버튼을 탭
     }
     
     struct Output {
         // tableView의 cell을 탭
         let userName: Observable<String>
+        // 검색과 필터링
+        let trimmedSearchText: Observable<String>
         // tableView에 데이터 보여주기?
         // collectionView에 데이터 보여주기?
     }
@@ -30,6 +33,15 @@ final class HomeworkViewModel {
         let userName = input.tableViewModelSelected
             .map { $0.name }
         
-        return Output(userName: userName)
+        let trimmedSearchText = input.searchButtonTapped
+            .map {
+                let value = $0.trimmingCharacters(in: .whitespaces)
+                return value
+            }
+        
+        return Output(
+            userName: userName,
+            trimmedSearchText: trimmedSearchText
+        )
     }
 }
