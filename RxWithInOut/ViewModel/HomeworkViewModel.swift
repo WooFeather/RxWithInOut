@@ -17,6 +17,7 @@ final class HomeworkViewModel {
         // searchBar의 search버튼을 탭
         let searchButtonTapped: Observable<ControlProperty<String>.Element>
         // cell 안의 더보기 버튼을 탭
+        // let detailButtonTapped: ControlEvent<Void>
     }
     
     struct Output {
@@ -24,8 +25,8 @@ final class HomeworkViewModel {
         let userName: Observable<String>
         // 검색과 필터링
         let trimmedSearchText: Observable<String>
-        // tableView에 데이터 보여주기?
-        // collectionView에 데이터 보여주기?
+        // cell 안의 더보기 버튼을 탭
+        // let detailButtonTapped: ControlEvent<Void>
     }
     
     func transform(input: Input) -> Output {

@@ -9,6 +9,7 @@ import UIKit
 
 final class HomeworkDetailViewController: UIViewController {
     
+//    let viewModel = HomeworkDetailViewModel()
     var nameContents: String?
     
     override func viewDidLoad() {
@@ -18,6 +19,8 @@ final class HomeworkDetailViewController: UIViewController {
         navigationItem.title = nameContents
     }
 
-
+//    private func bind() {
+//        let input = HomeworkDetailViewModel.Input(viewDidLoad: self.viewDidLoad())
+//    }
 }
 

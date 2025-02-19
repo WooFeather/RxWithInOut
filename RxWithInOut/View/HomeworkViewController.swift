@@ -25,6 +25,9 @@ final class HomeworkViewController: UIViewController {
     private let tableView = UITableView()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
     private let searchBar = UISearchBar()
+    
+    // private var tapped = Observable.just(())
+    // private lazy var detailButtonTap = ControlEvent<Void>(events: tapped)
      
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +37,10 @@ final class HomeworkViewController: UIViewController {
      
     private func bind() {
         
-        let input = HomeworkViewModel.Input(tableViewModelSelected: tableView.rx.modelSelected(Person.self), searchButtonTapped: searchBar.rx.searchButtonClicked.withLatestFrom(searchBar.rx.text.orEmpty))
+        let input = HomeworkViewModel.Input(
+            tableViewModelSelected: tableView.rx.modelSelected(Person.self),
+            searchButtonTapped: searchBar.rx.searchButtonClicked.withLatestFrom(searchBar.rx.text.orEmpty)
+        )
         
         let output = viewModel.transform(input: input)
         
@@ -42,6 +48,9 @@ final class HomeworkViewController: UIViewController {
             .bind(to: tableView.rx.items(cellIdentifier: PersonTableViewCell.identifier, cellType: PersonTableViewCell.self)) { (row, element, cell) in
                 cell.profileImageView.kf.setImage(with: URL(string: element.profileImage))
                 cell.usernameLabel.text = element.name
+                
+                // self.detailButtonTap = cell.detailButton.rx.tap
+                // output.detailButtonTapped
                 cell.detailButton.rx.tap
                     .bind(with: self) { owner, _ in
                         let vc = HomeworkDetailViewController()
