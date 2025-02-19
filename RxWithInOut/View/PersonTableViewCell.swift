@@ -7,10 +7,13 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class PersonTableViewCell: UITableViewCell {
     
     static let identifier = "PersonTableViewCell"
+    var disposeBag = DisposeBag()
     
     let usernameLabel: UILabel = {
         let label = UILabel()
@@ -49,6 +52,11 @@ final class PersonTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
      
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
+    }
     
     private func configure() {
         contentView.addSubview(usernameLabel)

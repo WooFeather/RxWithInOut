@@ -36,6 +36,13 @@ final class HomeworkViewController: UIViewController {
             .bind(to: tableView.rx.items(cellIdentifier: PersonTableViewCell.identifier, cellType: PersonTableViewCell.self)) { (row, element, cell) in
                 cell.profileImageView.kf.setImage(with: URL(string: element.profileImage))
                 cell.usernameLabel.text = element.name
+                cell.detailButton.rx.tap
+                    .bind(with: self) { owner, _ in
+                        let vc = HomeworkDetailViewController()
+                        vc.nameContents = element.name
+                        owner.navigationController?.pushViewController(vc, animated: true)
+                    }
+                    .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
         

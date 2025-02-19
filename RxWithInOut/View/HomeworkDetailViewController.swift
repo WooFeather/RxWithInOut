@@ -7,11 +7,15 @@
 
 import UIKit
 
-class HomeworkDetailViewController: UIViewController {
-
+final class HomeworkDetailViewController: UIViewController {
+    
+    var nameContents = "안녕하세유"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        view.backgroundColor = .gray
+        navigationItem.title = nameContents
     }
 
 
