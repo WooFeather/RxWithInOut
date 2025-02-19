@@ -13,6 +13,7 @@ import RxCocoa
 
 final class HomeworkViewController: UIViewController {
     
+    private let viewModel = HomeworkViewModel()
     private let disposeBag = DisposeBag()
     // 테이블뷰에 보여줄 애들
     private lazy var sampleUsers = BehaviorSubject(value: sampleUserData)
@@ -32,6 +33,11 @@ final class HomeworkViewController: UIViewController {
     }
      
     private func bind() {
+        
+        let input = HomeworkViewModel.Input(tableViewModelSelected: tableView.rx.modelSelected(Person.self))
+        
+        let output = viewModel.transform(input: input)
+        
         sampleUsers
             .bind(to: tableView.rx.items(cellIdentifier: PersonTableViewCell.identifier, cellType: PersonTableViewCell.self)) { (row, element, cell) in
                 cell.profileImageView.kf.setImage(with: URL(string: element.profileImage))
@@ -52,9 +58,9 @@ final class HomeworkViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        tableView.rx.modelSelected(Person.self)
-            .bind(with: self) { owner, selectedUser in
-                owner.selectedUserData.insert(selectedUser.name, at: 0)
+        output.userName
+            .bind(with: self) { owner, value in
+                owner.selectedUserData.insert(value, at: 0)
                 owner.selectedUsers.onNext(owner.selectedUserData)
             }
             .disposed(by: disposeBag)

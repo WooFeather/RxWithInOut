@@ -9,7 +9,7 @@ import UIKit
 
 final class HomeworkDetailViewController: UIViewController {
     
-    var nameContents = "안녕하세유"
+    var nameContents: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
