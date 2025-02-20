@@ -11,38 +11,56 @@ import RxCocoa
 
 final class HomeworkViewModel {
     
+    private let disposeBag = DisposeBag()
+    
+    // 테이블뷰 원본 데이터
+    private var sampleUserData: [Person] = User().userInfo
+    // 컬렉션뷰 원본 데이터
+    private var selectedUserNameData: [String] = []
+    
     struct Input {
-        // tableView의 cell을 탭
-        let tableViewModelSelected: ControlEvent<Person>
-        // searchBar의 search버튼을 탭
-        let searchButtonTapped: Observable<ControlProperty<String>.Element>
-        // cell 안의 더보기 버튼을 탭
-        // let detailButtonTapped: ControlEvent<Void>
+        // 검색버튼 탭
+        let searchButtonTapped: ControlEvent<Void>
+        // 서치텍스트
+        let searchText: ControlProperty<String>
+        // 테이블뷰 셀을 탭했을 때 selectedName
+        let selectedName: PublishSubject<String>
     }
     
     struct Output {
-        // tableView의 cell을 탭
-        let userName: Observable<String>
-        // 검색과 필터링
-        let trimmedSearchText: Observable<String>
-        // cell 안의 더보기 버튼을 탭
-        // let detailButtonTapped: ControlEvent<Void>
+        // 테이블뷰에 보여줄 데이터
+        let sampleUsers: BehaviorSubject<[Person]>
+        // 컬렉션뷰에 보여줄 데이터
+        let selectedUsers: BehaviorSubject<[String]>
     }
     
     func transform(input: Input) -> Output {
         
-        let userName = input.tableViewModelSelected
-            .map { $0.name }
+        // output으로 내보낼 테이블뷰 데이터
+        let userList = BehaviorSubject(value: sampleUserData)
+        // output으로 내보낼 컬렉션뷰 데이터
+        let selectedNameList = BehaviorSubject(value: selectedUserNameData)
         
-        let trimmedSearchText = input.searchButtonTapped
-            .map {
-                let value = $0.trimmingCharacters(in: .whitespaces)
-                return value
+        input.searchButtonTapped
+            .withLatestFrom(input.searchText)
+            .bind(with: self) { owner, value in
+                let trimmedText = value.trimmingCharacters(in: .whitespaces)
+                let result = trimmedText.isEmpty ? owner.sampleUserData : owner.sampleUserData.filter { $0.name.contains(trimmedText) }
+                
+                userList.onNext(result)
             }
+            .disposed(by: disposeBag)
+        
+        input.selectedName
+            .bind(with: self) { owner, value in
+                owner.selectedUserNameData.insert(value, at: 0)
+                selectedNameList.onNext(owner.selectedUserNameData)
+            }
+            .disposed(by: disposeBag)
         
         return Output(
-            userName: userName,
-            trimmedSearchText: trimmedSearchText
+            sampleUsers: userList,
+            selectedUsers: selectedNameList
         )
     }
 }

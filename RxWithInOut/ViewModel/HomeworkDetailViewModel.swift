@@ -9,19 +9,18 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-//final class HomeworkDetailViewModel {
-//    struct Input {
-//        let viewDidLoad: Observable<Void>
-//    }
-//    
-//    struct Output {
-//        let nameContents: Observable<String>
-//    }
-//    
-//    func transform(input: Input) -> Output {
-//        
-//        
-//        
-//        return Output(nameContents: input.viewDidLoad)
-//    }
-//}
+final class HomeworkDetailViewModel {
+    struct Input {
+        
+    }
+    
+    struct Output {
+        let nameContents: Observable<String>
+    }
+    
+    var nameContents = BehaviorSubject(value: "")
+    
+    func transform(input: Input) -> Output {
+        return Output(nameContents: nameContents)
+    }
+}

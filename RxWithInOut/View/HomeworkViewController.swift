@@ -16,18 +16,15 @@ final class HomeworkViewController: UIViewController {
     private let viewModel = HomeworkViewModel()
     private let disposeBag = DisposeBag()
     // 테이블뷰에 보여줄 애들
-    private lazy var sampleUsers = BehaviorSubject(value: sampleUserData)
-    private let sampleUserData: [Person] = User().userInfo
+//    private lazy var sampleUsers = BehaviorSubject(value: sampleUserData)
+//    private let sampleUserData: [Person] = User().userInfo // 원본데이터
     // 컬렉션뷰에 보여줄 애들
-    private lazy var selectedUsers = BehaviorSubject(value: selectedUserData)
-    private var selectedUserData: [String] = []
+//    private lazy var selectedUsers = BehaviorSubject(value: selectedUserData)
+//    private var selectedUserData: [String] = []
     
     private let tableView = UITableView()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
     private let searchBar = UISearchBar()
-    
-    // private var tapped = Observable.just(())
-    // private lazy var detailButtonTap = ControlEvent<Void>(events: tapped)
      
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,52 +34,59 @@ final class HomeworkViewController: UIViewController {
      
     private func bind() {
         
+        let selectedUserName = PublishSubject<String>()
+        
         let input = HomeworkViewModel.Input(
-            tableViewModelSelected: tableView.rx.modelSelected(Person.self),
-            searchButtonTapped: searchBar.rx.searchButtonClicked.withLatestFrom(searchBar.rx.text.orEmpty)
+            searchButtonTapped: searchBar.rx.searchButtonClicked,
+            searchText: searchBar.rx.text.orEmpty,
+            selectedName: selectedUserName
         )
         
         let output = viewModel.transform(input: input)
         
-        sampleUsers
+        output.sampleUsers
             .bind(to: tableView.rx.items(cellIdentifier: PersonTableViewCell.identifier, cellType: PersonTableViewCell.self)) { (row, element, cell) in
                 cell.profileImageView.kf.setImage(with: URL(string: element.profileImage))
                 cell.usernameLabel.text = element.name
-                
-                // self.detailButtonTap = cell.detailButton.rx.tap
-                // output.detailButtonTapped
                 cell.detailButton.rx.tap
                     .bind(with: self) { owner, _ in
                         let vc = HomeworkDetailViewController()
-                        vc.nameContents = element.name
+                        vc.viewModel.nameContents.onNext(element.name)
                         owner.navigationController?.pushViewController(vc, animated: true)
                     }
                     .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
         
-        selectedUsers
+        output.selectedUsers
             .bind(to: collectionView.rx.items(cellIdentifier: UserCollectionViewCell.identifier, cellType: UserCollectionViewCell.self)) { (item, element, cell) in
                 cell.label.text = element
             }
             .disposed(by: disposeBag)
         
-        output.userName
-            .bind(with: self) { owner, value in
-                owner.selectedUserData.insert(value, at: 0)
-                owner.selectedUsers.onNext(owner.selectedUserData)
+        tableView.rx.modelSelected(Person.self)
+            .bind(with: self) { owner, person in
+                selectedUserName.onNext(person.name)
             }
             .disposed(by: disposeBag)
         
-        output.trimmedSearchText
-            .bind(with: self) { owner, value in
-                print(value)
-                
-                let result = value.isEmpty ? owner.sampleUserData : owner.sampleUserData.filter { $0.name.contains(value) }
-                
-                owner.sampleUsers.onNext(result)
-            }
-            .disposed(by: disposeBag)
+        
+//        output.userName
+//            .bind(with: self) { owner, value in
+//                owner.selectedUserData.insert(value, at: 0)
+//                owner.selectedUsers.onNext(owner.selectedUserData)
+//            }
+//            .disposed(by: disposeBag)
+        
+//        output.trimmedSearchText
+//            .bind(with: self) { owner, value in
+//                print(value)
+//                
+//                let result = value.isEmpty ? owner.sampleUserData : owner.sampleUserData.filter { $0.name.contains(value) }
+//                
+//                owner.sampleUsers.onNext(result)
+//            }
+//            .disposed(by: disposeBag)
     }
 }
  

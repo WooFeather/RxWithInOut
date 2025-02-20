@@ -6,21 +6,29 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 final class HomeworkDetailViewController: UIViewController {
     
-//    let viewModel = HomeworkDetailViewModel()
-    var nameContents: String?
+    let viewModel = HomeworkDetailViewModel()
+    let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .gray
-        navigationItem.title = nameContents
+        bind()
     }
 
-//    private func bind() {
-//        let input = HomeworkDetailViewModel.Input(viewDidLoad: self.viewDidLoad())
-//    }
+    private func bind() {
+        let input = HomeworkDetailViewModel.Input()
+        let output = viewModel.transform(input: input)
+        
+        output.nameContents
+            .bind(with: self) { owner, name in
+                owner.navigationItem.title = name
+            }
+            .disposed(by: disposeBag)
+    }
 }
-
